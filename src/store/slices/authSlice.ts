@@ -15,7 +15,7 @@ const authSlice = createSlice({
     // login action using parameters instead of API call
     login(  
       state,
-      action: PayloadAction<{ username: string; password: string; role: "admin" | "citizen" }>
+      action: PayloadAction<{ username: string; password: string; role: "admin" | "citizen" | "volunteer" | "coordinator" | "agency" }>
     ) {
       const { username, password, role } = action.payload;
 
