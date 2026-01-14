@@ -1,9 +1,10 @@
+import HomePage from "@/pages/HomePage/HomePage";
 import Image from "next/image";
 
 export default function Home() {
   return (
     <>
-    <h1 className="text-2xl text-green-700">h</h1>
+    <HomePage />
     </>
   );
 }
