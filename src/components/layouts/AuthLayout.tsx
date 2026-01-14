@@ -12,23 +12,23 @@ const AuthLayout = ({
   children: React.ReactNode;
   allowedRoles?: string[];
 }) => {
-  const { user, loading } = useSelector(
-    (state: RootState) => state.auth
-  );
-  const router = useRouter();
+  // const { user, loading } = useSelector(
+  //   (state: RootState) => state.auth
+  // );
+  // const router = useRouter();
 
-  useEffect(() => {
-    if (!loading) {
-      if (!user) router.replace("/login");
-      else if (
-        allowedRoles &&
-        !allowedRoles.includes(user.role)
-      )
-        router.replace("/unauthorized");
-    }
-  }, [user, loading, allowedRoles, router]);
+  // useEffect(() => {
+  //   if (!loading) {
+  //     if (!user) router.replace("/login");
+  //     else if (
+  //       allowedRoles &&
+  //       !allowedRoles.includes(user.role)
+  //     )
+  //       router.replace("/unauthorized");
+  //   }
+  // }, [user, loading, allowedRoles, router]);
 
-  if (loading || !user) return null;
+  // if (loading || !user) return null;
 
   return <>{children}</>;
 };
