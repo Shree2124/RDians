@@ -53,6 +53,7 @@ export default function Map({
   const [map, setMap] = useState<any | null>(null);
   const [libsLoaded, setLibsLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
 
   // Controls
   const [activeLayer, setActiveLayer] = useState<'light' | 'dark' | 'satellite' | 'humanitarian'>('light');
@@ -67,6 +68,7 @@ export default function Map({
     heat?: any;
 
     choropleth?: any;
+    userMarker?: any;
   }>({});
 
   // --- CONFIGURATION ---
@@ -181,6 +183,12 @@ export default function Map({
 
   }, [map, activeLayer, activeViz, incidents, showIncidents]);
 
+  // --- 4. RENDER USER LOCATION ---
+  useEffect(() => {
+    if (!map || !window.L || !userLocation) return;
+    renderUserLocation(window.L, map);
+  }, [map, userLocation]);
+
   // --- RENDER FUNCTIONS ---
 
   const renderPinpoints = (L: any, map: any) => {
@@ -259,6 +267,36 @@ export default function Map({
     layersRef.current.choropleth = rects;
   };
 
+  const renderUserLocation = (L: any, map: any) => {
+    if (layersRef.current.userMarker) {
+      layersRef.current.userMarker.remove();
+    }
+
+    if (!userLocation) return;
+
+    // Custom CSS-based Blue Dot
+    const html = `
+      <div class="relative w-full h-full flex items-center justify-center">
+        <div class="absolute w-full h-full bg-blue-500/50 rounded-full animate-ping"></div>
+        <div class="relative w-4 h-4 bg-blue-600 border-2 border-white rounded-full shadow-lg ring-2 ring-white/50"></div>
+      </div>
+    `;
+
+    const icon = L.divIcon({
+      className: 'bg-transparent',
+      html: html,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+
+    const marker = L.marker([userLocation.lat, userLocation.lon], {
+      icon,
+      zIndexOffset: 1000 // Always on top
+    }).addTo(map);
+
+    layersRef.current.userMarker = marker;
+  };
+
   const getSeverityColor = (s: string) => {
     switch (s) {
       case 'Critical': return '#EF4444';
@@ -272,8 +310,16 @@ export default function Map({
     if (!map) return;
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (p) => map.setView([p.coords.latitude, p.coords.longitude], 14),
-        (e) => console.error(e)
+        (p) => {
+          const { latitude, longitude } = p.coords;
+          setUserLocation({ lat: latitude, lon: longitude });
+          map.flyTo([latitude, longitude], 16, { animate: true, duration: 1.5 });
+        },
+        (e) => {
+          console.error("Geolocation error:", e);
+          // Optional: Show a toast/error message to user
+        },
+        { enableHighAccuracy: true }
       );
     }
   };
@@ -295,7 +341,7 @@ export default function Map({
         {/* Control Panel */}
         <AnimatePresence>
           {showControls && (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-slate-100 w-64 flex flex-col gap-4">
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-slate-100 w-64 max-w-[calc(100vw-48px)] flex flex-col gap-4">
 
               {/* Layers */}
               <div>

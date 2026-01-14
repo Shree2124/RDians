@@ -87,10 +87,9 @@ export default function IncidentsPage() {
         {/* Table Header */}
         <div className="grid grid-cols-12 gap-4 p-4 border-b border-slate-100 bg-slate-50/50 text-xs font-bold text-slate-500 uppercase tracking-wider">
           <div className="col-span-12 md:col-span-5">Incident Details</div>
-          <div className="col-span-6 md:col-span-3">Reporter</div>
-          <div className="col-span-3 md:col-span-2">Severity</div>
-          <div className="col-span-3 md:col-span-2">Status</div>
-          {/* <div className="col-span-1 text-right">Actions</div> */}
+          <div className="hidden md:block md:col-span-3">Reporter</div>
+          <div className="col-span-6 md:col-span-2">Severity</div>
+          <div className="col-span-6 md:col-span-2">Status</div>
         </div>
 
         {/* Table Body */}
@@ -106,7 +105,7 @@ export default function IncidentsPage() {
               <div className="col-span-12 md:col-span-5">
                 <div className="flex items-start gap-4">
                   <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${incident.category === 'Fire' ? 'bg-red-500' :
-                      incident.category === 'Medical' ? 'bg-blue-500' : 'bg-green-500'
+                    incident.category === 'Medical' ? 'bg-blue-500' : 'bg-green-500'
                     }`} />
                   <div>
                     <h3 className="font-bold text-slate-800">{incident.category}</h3>
@@ -120,7 +119,7 @@ export default function IncidentsPage() {
               </div>
 
               {/* Reporter */}
-              <div className="col-span-6 md:col-span-3 flex items-center gap-3">
+              <div className="hidden md:flex md:col-span-3 items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
                   <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${incident.reporterId}`} alt="Avatar" />
                 </div>
@@ -131,14 +130,14 @@ export default function IncidentsPage() {
               </div>
 
               {/* Severity */}
-              <div className="col-span-3 md:col-span-2">
+              <div className="col-span-6 md:col-span-2">
                 <span className={`px-3 py-1 rounded-full text-xs font-bold border ${getSeverityColor(incident.severity || 'Low')}`}>
                   {incident.severity}
                 </span>
               </div>
 
               {/* Status */}
-              <div className="col-span-3 md:col-span-2 flex items-center justify-between">
+              <div className="col-span-6 md:col-span-2 flex items-center justify-between">
                 <span className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${getStatusColor(incident.status || 'Reported')}`}>
                   <div className="w-1.5 h-1.5 rounded-full bg-current" />
                   {incident.status}

@@ -96,7 +96,7 @@ export default function MapPage() {
                 <p className="text-slate-500">Real-time visualization of reported incidents and available resources.</p>
             </div>
 
-            <div className="w-full h-[600px] rounded-3xl overflow-hidden shadow-sm border border-slate-200">
+            <div className="w-full h-[calc(100vh-200px)] md:h-[600px] rounded-3xl overflow-hidden shadow-sm border border-slate-200">
                 <Map
                     incidents={MOCK_INCIDENTS}
                     resources={MOCK_RESOURCES}
