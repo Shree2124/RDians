@@ -56,7 +56,7 @@ export default function DashboardSidebar({ mobileMenuOpen, setMobileMenuOpen }: 
       name: 'Analytics',
       icon: 'mdi:chart-line',
       href: '/auth/dashboard/analytics',
-      roles: ['agency', 'admin', 'volunteer', 'citizen']
+      roles: ['agency', 'admin', 'volunteer']
     },
     {
       name: 'Resources',
@@ -65,10 +65,16 @@ export default function DashboardSidebar({ mobileMenuOpen, setMobileMenuOpen }: 
       roles: ['volunteer', 'agency', 'admin', 'coordinator']
     },
     {
-      name: 'Team',
+      name: 'Team Management',
       icon: 'mdi:account-group',
       href: '/auth/dashboard/team',
-      roles: ['agency', 'admin', 'coordinator']
+      roles: ['agency', 'coordinator']
+    },
+    {
+      name: 'Agency Management',
+      icon: 'mdi:account-group',
+      href: '/auth/dashboard/agency-management',
+      roles: ['admin']
     },
     {
       name: 'Settings',
