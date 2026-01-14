@@ -140,7 +140,6 @@ export default function CrisisDashboard() {
           value={criticalCount}
           icon="mdi:fire"
           color="text-[#0EA5E9]"
-          color="text-[#0EA5E9]"
           iconBg="bg-[#0EA5E9]/10"
           trend={-5}
         />
