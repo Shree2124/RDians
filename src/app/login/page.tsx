@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/slices/authSlice";
 import { dummyUsers, Role } from "@/data/dummyUsers";
@@ -8,67 +8,72 @@ import { useRouter } from "next/navigation";
 
 const page = () => {
   const dispatch = useDispatch();
+  const router = useRouter();
 
-  const router = useRouter()
-
-  const [role, setRole] = useState<Role>("admin");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
 
   useEffect(() => {
-    const user = dummyUsers.find((u) => u.role === role);
+    if (!selectedRole) return;
+
+    const user = dummyUsers.find((u) => u.role === selectedRole);
     if (user) {
-      setUsername(user.username);
-      setPassword(user.password);
+      dispatch(
+        login({
+          username: user.username,
+          password: user.password,
+          role: user.role,
+        })
+      );
+      router.push("/auth/dashboard/");
     }
-  }, [role]);
-
-  const handleLogin = () => {
-    dispatch(login({ username, password, role }));
-    router.push("/auth/dashboard/")
-
-  };
+  }, [selectedRole, dispatch, router]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-80">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-blue-100 px-6">
+      {/* HEADER */}
+      <h1 className="text-4xl font-bold text-blue-700 mb-2">
+        Crisis Response Platform
+      </h1>
+      <p className="text-blue-600 mb-10 text-center max-w-xl">
+        Select your role to access the national emergency coordination system.
+        <br />
+        <span className="text-sm font-medium">
+          Authorized personnel only.
+        </span>
+      </p>
 
-        <label className="block mb-2 font-semibold">Select Role</label>
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value as Role)}
-          className="w-full p-2 mb-4 border rounded"
-        >
-          {dummyUsers.map((u) => (
-            <option key={u.role} value={u.role}>
-              {u.role.charAt(0).toUpperCase() + u.role.slice(1)}
-            </option>
-          ))}
-        </select>
+      {/* ROLE GRID */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl w-full">
+        {dummyUsers.map((user) => (
+          <div
+            key={user.role}
+            onClick={() => setSelectedRole(user.role)}
+            className="cursor-pointer bg-white border border-blue-200 rounded-xl p-6
+                       hover:border-blue-500 hover:shadow-lg transition group"
+          >
+            <div className="mb-4">
+              <div className="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg">
+                {user.role.charAt(0).toUpperCase()}
+              </div>
+            </div>
 
-        <label className="block mb-2 font-semibold">Username</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="w-full p-2 mb-4 border rounded"
-        />
+            <h3 className="text-lg font-semibold text-blue-700 capitalize mb-1">
+              {user.role.replace("-", " ")}
+            </h3>
 
-        <label className="block mb-2 font-semibold">Password</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 mb-6 border rounded"
-        />
+            <p className="text-sm text-gray-600">
+              Access system features related to{" "}
+              <span className="font-medium capitalize">
+                {user.role.replace("-", " ")}
+              </span>
+              .
+            </p>
 
-        <button
-          onClick={handleLogin}
-          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
-        >
-          Login
-        </button>
+            <p className="mt-4 text-xs text-blue-500 opacity-0 group-hover:opacity-100 transition">
+              Click to continue →
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );
