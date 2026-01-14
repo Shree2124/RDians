@@ -13,6 +13,18 @@ const NAV_ITEMS = {
     { label: "My Profile", href: "/auth/dashboard" },
     { label: "Activity", href: "/auth/dashboard/activity" },
   ],
+  volunteer: [
+    { label: "My Profile", href: "/auth/dashboard" },
+    { label: "Activity", href: "/auth/dashboard/activity" },
+  ],
+  coordinator: [
+    { label: "My Profile", href: "/auth/dashboard" },
+    { label: "Activity", href: "/auth/dashboard/activity" },
+  ],
+  agency: [
+    { label: "My Profile", href: "/auth/dashboard" },
+    { label: "Activity", href: "/auth/dashboard/activity" },
+  ],
 };
 
 export default function DashboardSidebar() {
