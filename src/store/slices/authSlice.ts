@@ -132,21 +132,6 @@ export const fetchCurrentUser = createAsyncThunk(
   }
 );
 
-export const getSession = createAsyncThunk("auth/session", async () => {
-  const client = await getSupabaseBrowserClient();
-  const { data } = await client.auth.getSession();
-  if (!data.session) return null;
-  const { data: profile } = await client
-    .from("profiles")
-    .select("role")
-    .eq("id", data.session.user.id)
-    .single();
-
-  return {
-    ...data.session.user,
-    role: profile?.role,
-  };
-});
 
 export const signOut = createAsyncThunk("auth/logout", async () => {
   const client = await getSupabaseBrowserClient();
@@ -165,14 +150,11 @@ const authSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getSession.fulfilled, (state, action) => {
-        state.user = action.payload;
-      })
       .addCase(signOut.fulfilled, (state) => {
         state.user = null;
       })
       .addCase(signUp.pending, (state) => {
-        state.loading = true;
+        state.status = "loading";
       })
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
         state.status = "authenticated";
