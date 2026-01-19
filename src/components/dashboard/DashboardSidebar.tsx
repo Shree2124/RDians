@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@/store';
+import { AppDispatch, RootState } from '@/store';
 import { signOut } from '@/store/slices/authSlice';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -23,7 +23,7 @@ interface NavigationItem {
 }
 
 export default function DashboardSidebar({ mobileMenuOpen, setMobileMenuOpen }: DashboardSidebarProps) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useSelector((state: RootState) => state.auth);

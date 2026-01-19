@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { Role } from "@/data/role";
 import { useDispatch } from "react-redux";
-import { setLoading, signUp } from "@/store/slices/authSlice";
+import { signUp } from "@/store/slices/authSlice";
+import { AppDispatch } from "@/store";
 
 interface Props {
   role: Role;
@@ -17,7 +18,7 @@ const RegistrationForm = ({ role, onBack }: Props) => {
   const [error, setError] = useState<string>("");
   const [msg, setMsg] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const validate = () => {
     // Check if fields are empty
@@ -60,7 +61,7 @@ const RegistrationForm = ({ role, onBack }: Props) => {
       if (!validate()) return;
 
       // Dispatch signUp with correct argument shape
-      const user = await dispatch(
+      const user: any = await dispatch(
         signUp({ email, password, role: role.toLowerCase() })
       );
       console.log(user);
@@ -68,7 +69,7 @@ const RegistrationForm = ({ role, onBack }: Props) => {
       if (user?.payload) setMsg(user?.payload?.message);
     } catch (error) {
       // Optionally handle error or setError
-      setError("Failed to register. Please try again. ", error);
+      setError("Failed to register. Please try again. ");
     } finally {
       setLoading(false);
       await setTimeout(() => {

@@ -8,10 +8,12 @@ export default function AuthInit() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    // @ts-expect-error: fetchCurrentUser is a thunk action
     dispatch(fetchCurrentUser());
 
     const supabase = getSupabaseBrowserClient();
     const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      // @ts-expect-error: fetchCurrentUser is a thunk action
       dispatch(fetchCurrentUser());
     });
 

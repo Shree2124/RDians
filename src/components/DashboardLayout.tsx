@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@/store';
+import { AppDispatch, RootState } from '@/store';
 import { signOut } from '@/store/slices/authSlice';
 import { UserRole } from '@/app/types';
 import Link from 'next/link';
@@ -23,7 +23,7 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children, title = "Dashboard", subtitle }: DashboardLayoutProps) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useSelector((state: RootState) => state.auth);
