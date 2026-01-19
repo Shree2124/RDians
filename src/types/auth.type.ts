@@ -1,7 +1,8 @@
 import { User } from "./user.type";
 
 export interface AuthState {
-  user: User | null;
-  isAuthenticated: boolean;
-  loading: boolean;
+  user: any | null; // Supabase Auth user
+  profile: User | any;
+  status: "idle" | "loading" | "authenticated" | "error";
+  error?: string;
 }

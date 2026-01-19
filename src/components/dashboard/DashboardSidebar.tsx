@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
-import { logout } from '@/store/slices/authSlice';
+import { signOut } from '@/store/slices/authSlice';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -88,7 +88,7 @@ export default function DashboardSidebar({ mobileMenuOpen, setMobileMenuOpen }: 
   const filteredNavigation = navigation.filter(item => item.roles.includes(currentRole));
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(signOut());
     router.push('/login');
   };
 

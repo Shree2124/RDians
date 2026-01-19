@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import AuthInit from "./auth-init";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
   title: "RDians",
   description: "Crises Response & Disaster Guardians",
   icons: {
-    icon: '/icon/logo.svg',     
+    icon: "/icon/logo.svg",
   },
 };
 
@@ -31,7 +32,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <AuthInit />
+          {children}
+        </Providers>
       </body>
     </html>
   );

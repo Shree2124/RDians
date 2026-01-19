@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
-import { logout } from '@/store/slices/authSlice';
+import { signOut } from '@/store/slices/authSlice';
 import { UserRole } from '@/app/types';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
@@ -41,7 +41,7 @@ export default function DashboardLayout({ children, title = "Dashboard", subtitl
   }, []);
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(signOut());
     router.push('/login');
   };
 

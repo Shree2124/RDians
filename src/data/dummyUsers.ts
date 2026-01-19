@@ -8,7 +8,7 @@ export interface DummyUser {
 
 export const dummyUsers: DummyUser[] = [
   { username: "admin_user", password: "admin123", role: "admin" },
-  { username: "citizen_user", password: "citizen123", role: "citizen" },
+  { username: "citizen_user", password: "Citizen@123", role: "citizen" },
   { username: "volunteer_user", password: "volunteer123", role: "volunteer" },
   { username: "coordinator_user", password: "coordinator123", role: "coordinator" },
   { username: "agency_user", password: "agency123", role: "agency" },
