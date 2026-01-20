@@ -6,18 +6,22 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 export default function AuthInit() {
   const dispatch = useDispatch();
+  const getUser = async ()=>{
+    const supabase = getSupabaseBrowserClient();
+    const { data: listener } = supabase.auth.onAuthStateChange(async() => {
+      // @ts-expect-error: fetchCurrentUser is a thunk action
+      const res = await dispatch(fetchCurrentUser());
+      console.log(res)
+    });
+
+    return () => listener.subscription.unsubscribe();
+    }
 
   useEffect(() => {
     // @ts-expect-error: fetchCurrentUser is a thunk action
     dispatch(fetchCurrentUser());
 
-    const supabase = getSupabaseBrowserClient();
-    const { data: listener } = supabase.auth.onAuthStateChange(() => {
-      // @ts-expect-error: fetchCurrentUser is a thunk action
-      dispatch(fetchCurrentUser());
-    });
-
-    return () => listener.subscription.unsubscribe();
+    getUser()
   }, []);
 
   return null;
