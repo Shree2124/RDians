@@ -105,7 +105,7 @@ export const signIn = createAsyncThunk<
       }
 
       // Return the user object
-      return res.data.user as User;
+      return res.data.profile as User;
     } catch (err: any) {
       console.error("Login error:", err);
 

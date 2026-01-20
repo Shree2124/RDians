@@ -61,7 +61,10 @@ const LoginForm = ({ role, onBack }: Props) => {
 
       // Dispatch signIn with correct argument shape
       const user: any = await dispatch(signIn({ email, password }));
-      console.log(user);
+      if(role !== user?.payload.role) {
+        setError("Wrong role selected")
+        return
+      }
       if (user.error) {
         setError(error);
         return;
