@@ -60,7 +60,7 @@ const LoginForm = ({ role, onBack }: Props) => {
       if (!validate()) return;
 
       // Dispatch signIn with correct argument shape
-      const user: any = dispatch(signIn({ email, password }));
+      const user: any = await dispatch(signIn({ email, password }));
       console.log(user);
       if (user.error) {
         setError(error);
