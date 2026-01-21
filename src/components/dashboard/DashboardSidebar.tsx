@@ -37,49 +37,49 @@ export default function DashboardSidebar({ mobileMenuOpen, setMobileMenuOpen }: 
     {
       name: 'Dashboard',
       icon: 'mdi:view-dashboard-outline',
-      href: '/auth/dashboard',
+      href: '/dashboard',
       roles: ['citizen', 'volunteer', 'agency', 'admin', 'coordinator']
     },
     {
       name: 'Incidents',
       icon: 'mdi:alert-circle-outline',
-      href: '/auth/dashboard/incidents',
+      href: '/dashboard/incidents',
       roles: ['citizen', 'volunteer', 'agency', 'admin', 'coordinator']
     },
     {
       name: 'Map View',
       icon: 'mdi:map-outline',
-      href: '/auth/dashboard/map',
+      href: '/dashboard/map',
       roles: ['citizen', 'volunteer', 'agency', 'admin', 'coordinator']
     },
     {
       name: 'Analytics',
       icon: 'mdi:chart-line',
-      href: '/auth/dashboard/analytics',
+      href: '/dashboard/analytics',
       roles: ['agency', 'admin', 'volunteer']
     },
     {
       name: 'Resources',
       icon: 'mdi:package-variant-closed',
-      href: '/auth/dashboard/resources',
+      href: '/dashboard/resources',
       roles: ['volunteer', 'agency', 'admin', 'coordinator']
     },
     {
       name: 'Team Management',
       icon: 'mdi:account-group',
-      href: '/auth/dashboard/team',
+      href: '/dashboard/team',
       roles: ['agency', 'coordinator']
     },
     {
       name: 'Agency Management',
       icon: 'mdi:account-group',
-      href: '/auth/dashboard/agency-management',
+      href: '/dashboard/agency-management',
       roles: ['admin']
     },
     {
       name: 'Settings',
       icon: 'mdi:cog',
-      href: '/auth/dashboard/settings',
+      href: '/dashboard/settings',
       roles: ['volunteer', 'agency', 'admin', 'coordinator']
     },
   ];
