@@ -165,6 +165,7 @@ const authSlice = createSlice({
         state.profile = action.payload
       })
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        console.log("action.payload", action.payload)
         state.status = "authenticated";
         state.user = action.payload.user
         state.profile = action.payload.profile
@@ -178,5 +179,5 @@ const authSlice = createSlice({
   },
 });
 
-// export const { login, logout, setLoading } = authSlice.actions;
+export const { setUser } = authSlice.actions;
 export default authSlice.reducer;

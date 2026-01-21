@@ -26,7 +26,7 @@ export default function DashboardSidebar({ mobileMenuOpen, setMobileMenuOpen }: 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { profile } = useSelector((state: RootState) => state.auth);
 
   // Local state for desktop collapse
   const [isRailExpanded, setIsRailExpanded] = useState(false);
@@ -84,7 +84,7 @@ export default function DashboardSidebar({ mobileMenuOpen, setMobileMenuOpen }: 
     },
   ];
 
-  const currentRole = user?.role || 'citizen';
+  const currentRole = profile?.role || 'citizen';
   const filteredNavigation = navigation.filter(item => item.roles.includes(currentRole));
 
   const handleLogout = () => {
