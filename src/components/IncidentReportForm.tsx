@@ -40,6 +40,7 @@ export default function IncidentReportForm({ onSubmit, onCancel }: IncidentRepor
     location: null,
     estimatedAffected: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const handleInputChange = (field: keyof FormData, value: string | Location | null) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -96,7 +97,7 @@ export default function IncidentReportForm({ onSubmit, onCancel }: IncidentRepor
         estimatedAffected: formData.estimatedAffected ? Number(formData.estimatedAffected) : undefined,
       };
 
-      const success = await createIncident(incidentData);
+      const success = await createIncident(incidentData, imageFile || undefined);
 
       if (success) {
         // Reset form
@@ -107,6 +108,7 @@ export default function IncidentReportForm({ onSubmit, onCancel }: IncidentRepor
           location: null,
           estimatedAffected: '',
         });
+        setImageFile(null);
         onSubmit?.();
       } else {
         setErrors({ submit: 'Failed to submit incident report. Please try again.' });
@@ -175,8 +177,8 @@ export default function IncidentReportForm({ onSubmit, onCancel }: IncidentRepor
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleInputChange('category', category)}
                 className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${formData.category === category
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                  ? 'border-blue-500 bg-blue-50 text-blue-700'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
                   }`}
               >
                 {category}
@@ -202,8 +204,8 @@ export default function IncidentReportForm({ onSubmit, onCancel }: IncidentRepor
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleInputChange('severity', severity)}
                 className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${formData.severity === severity
-                    ? `border-current ${getSeverityColor(severity)}`
-                    : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                  ? `border-current ${getSeverityColor(severity)}`
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
                   }`}
               >
                 {severity}
@@ -239,6 +241,46 @@ export default function IncidentReportForm({ onSubmit, onCancel }: IncidentRepor
           </div>
         </div>
 
+        {/* Image Upload */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Attachment (Image)
+          </label>
+          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:bg-gray-50 transition-colors cursor-pointer relative">
+            <input
+              type="file"
+              accept="image/*"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              onChange={(e) => {
+                if (e.target.files?.[0]) {
+                  setImageFile(e.target.files[0]);
+                }
+              }}
+            />
+            <div className="space-y-1 text-center">
+              {imageFile ? (
+                <div className="text-sm text-gray-600">
+                  <Icon icon="mdi:check-circle" className="mx-auto h-8 w-8 text-green-500 mb-2" />
+                  <span className="font-medium text-green-600">{imageFile.name}</span>
+                  <p className="text-xs text-gray-400 mt-1">Click to change</p>
+                </div>
+              ) : (
+                <>
+                  <Icon icon="mdi:image-plus" className="mx-auto h-12 w-12 text-gray-400" />
+                  <div className="flex text-sm text-gray-600 justify-center">
+                    <span className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                      Upload a file
+                    </span>
+                    <p className="pl-1">or drag and drop</p>
+                  </div>
+                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+
         {/* Location */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -270,8 +312,8 @@ export default function IncidentReportForm({ onSubmit, onCancel }: IncidentRepor
               type="button"
               onClick={() => setShowMap(true)}
               className={`w-full p-4 border-2 border-dashed rounded-lg text-center transition-colors ${errors.location
-                  ? 'border-red-300 text-red-600 hover:border-red-400'
-                  : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                ? 'border-red-300 text-red-600 hover:border-red-400'
+                : 'border-gray-300 text-gray-600 hover:border-gray-400'
                 }`}
             >
               <Icon icon="mdi:map-marker-plus" className="w-8 h-8 mx-auto mb-2" />
@@ -330,8 +372,8 @@ export default function IncidentReportForm({ onSubmit, onCancel }: IncidentRepor
             whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
             whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
             className={`px-6 py-2 text-sm font-medium text-white rounded-lg transition-all ${isSubmitting
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-red-600 hover:bg-red-700'
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-red-600 hover:bg-red-700'
               }`}
           >
             {isSubmitting ? (

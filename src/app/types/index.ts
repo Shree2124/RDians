@@ -7,7 +7,7 @@ export type UserRole = 'Citizen' | 'Volunteer' | 'AgencyAdmin';
 
 export type IncidentCategory = 'Fire' | 'Flood' | 'Medical' | 'Supply' | 'Other';
 export type IncidentSeverity = 'Low' | 'Medium' | 'High' | 'Critical';
-export type IncidentStatus = 'Reported' | 'Assigned' | 'In Progress' | 'Resolved';
+export type IncidentStatus = 'Pending' | 'Reported' | 'Assigned' | 'In Progress' | 'Resolved';
 
 export type ResourceType = 'Medical' | 'Food' | 'Shelter' | 'Transport' | 'Volunteers';
 export type ResourceStatus = 'Available' | 'Allocated' | 'Critical' | 'Maintenance';
@@ -33,14 +33,16 @@ export interface Incident {
   category: IncidentCategory;
   severity: IncidentSeverity;
   status: IncidentStatus;
-  location: Location;
+  location: Location; // Maps to lat/lng in DB
   description: string;
-  reporterId: string;
+  reporterId: string; // Maps to user_id in DB
   assignedToId?: string;
+  agencies_assigned?: string[]; // Maps to agencies_assigned in DB
   notes?: string;
-  timestamp: Date;
+  timestamp: Date; // Maps to created_at in DB
   lastUpdated: Date;
-  estimatedAffected?: number;
+  estimatedAffected?: number; // Maps to estimated_people_affected in DB
+  img_url?: string; // Maps to img_url in DB
 }
 
 export interface Resource {
