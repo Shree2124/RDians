@@ -7,7 +7,7 @@ export const saveTempFile = async (
   buffer: Buffer,
   filename?: string
 ) => {
-  const tempDir = path.join(process.cwd(), "tmp");
+  const tempDir = path.join(process.cwd(), "public/temp");
 
   await fs.mkdir(tempDir, { recursive: true });
 
