@@ -4,7 +4,7 @@ import { AuthState } from "@/types/auth.type";
 import { User } from "@/types/user.type";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { createAdmin } from "@/lib/supabase/admin";
+import { createAdmin } from "@/lib/supabase/admin"; 
 
 export const signUpWithGoogle = createAsyncThunk("auth/google", async () => {
   const supabase = getSupabaseBrowserClient();
@@ -105,7 +105,7 @@ export const signIn = createAsyncThunk<
       }
 
       // Return the user object
-      return res.data.user as User;
+      return res.data.profile as User;
     } catch (err: any) {
       console.error("Login error:", err);
 
@@ -147,7 +147,11 @@ const initialState: AuthState = {
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    setUser: (state, action)=>{
+      state.profile = action.payload
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(signOut.fulfilled, (state) => {
@@ -156,10 +160,15 @@ const authSlice = createSlice({
       .addCase(signUp.pending, (state) => {
         state.status = "loading";
       })
+      .addCase(signIn.fulfilled, (state, action)=>{
+        state.status = "authenticated"
+        state.profile = action.payload
+      })
       .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        console.log("action.payload", action.payload)
         state.status = "authenticated";
-        state.user = action.payload.user;
-        state.profile = action.payload.profile;
+        state.user = action.payload.user
+        state.profile = action.payload.profile
       })
       .addCase(fetchCurrentUser.rejected, (state, action) => {
         state.status = "error";
@@ -170,5 +179,5 @@ const authSlice = createSlice({
   },
 });
 
-// export const { login, logout, setLoading } = authSlice.actions;
+export const { setUser } = authSlice.actions;
 export default authSlice.reducer;

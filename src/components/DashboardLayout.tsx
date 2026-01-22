@@ -26,7 +26,7 @@ export default function DashboardLayout({ children, title = "Dashboard", subtitl
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { profile } = useSelector((state: RootState) => state.auth);
 
   // State
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -45,7 +45,7 @@ export default function DashboardLayout({ children, title = "Dashboard", subtitl
     router.push('/login');
   };
 
-  const currentRole = user?.role || 'citizen';
+  const currentRole = profile?.role || 'citizen';
 
   // Basic title logic if generic
   // Ideally, titles should be handled by the pages or a context, but here we fallback
@@ -107,7 +107,7 @@ export default function DashboardLayout({ children, title = "Dashboard", subtitl
                 className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-700 p-0.5 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
               >
                 <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-blue-700 font-bold text-sm">
-                  {user?.username ? user.username.substring(0, 2).toUpperCase() : 'US'}
+                  {profile?.email ? profile.email.substring(0, 2).toUpperCase() : 'US'}
                 </div>
               </button>
 
@@ -121,7 +121,7 @@ export default function DashboardLayout({ children, title = "Dashboard", subtitl
                     className="absolute top-12 right-0 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 p-2 z-50 origin-top-right"
                   >
                     <div className="px-4 py-3 border-b border-gray-50">
-                      <p className="text-sm font-bold text-gray-900">{user?.username || 'User'}</p>
+                      <p className="text-sm font-bold text-gray-900">{profile?.email || 'User'}</p>
                       <p className="text-xs text-gray-500 truncate">{currentRole}</p>
                     </div>
 

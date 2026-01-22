@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
 
     console.log("Profile:", profileData);
 
-    return NextResponse.json({ user: userData, profile: profileData });
+    return NextResponse.json({ user: userData, profile: profileData, status: 200 });
   } catch (err) {
     console.error("GET user/profile error:", err);
     return NextResponse.json(
