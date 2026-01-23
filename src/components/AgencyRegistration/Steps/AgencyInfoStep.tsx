@@ -116,6 +116,20 @@ export default function AgencyInfoStep({ formData, onChange, errors }: AgencyInf
                     {errors.agency_address && <p className="text-xs text-red-500 mt-1">{errors.agency_address}</p>}
                 </div>
 
+                {/* Agency Description */}
+                <div className="col-span-2">
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                        Agency Description
+                    </label>
+                    <textarea
+                        value={formData.agency_description || ''}
+                        onChange={(e) => onChange('agency_description', e.target.value)}
+                        rows={3}
+                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none resize-none"
+                        placeholder="Briefly describe your agency's mission and activities..."
+                    />
+                </div>
+
                 {/* State */}
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">

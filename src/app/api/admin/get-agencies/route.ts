@@ -31,7 +31,7 @@ export const GET = withUser(async (req: NextRequest, user) => {
     //sCASE 2: no id -> fetch all agencies (limited fields)
     const { data, error } = await supabase
       .from("agencies")
-      .select("id, agency_name, status, agency_address");
+      .select("id, agency_name, status, agency_address, agency_type, city, state, team_size");
 
     if (error) {
       return NextResponse.json(

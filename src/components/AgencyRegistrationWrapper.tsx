@@ -83,10 +83,17 @@ export default function AgencyRegistrationWrapper({ children }: { children: Reac
                     <h2 className="text-2xl font-bold text-slate-800 mb-2">Application Rejected</h2>
                     <p className="text-slate-500 mb-6 leading-relaxed">
                         Unfortunately, your agency application was not approved.
+                        <br />
+                        Please check your email for the rejection reason.
                     </p>
-                    <button onClick={() => window.location.reload()} className="text-blue-600 font-bold hover:underline">
-                        Contact Support
-                    </button>
+                    <div className="space-y-3">
+                        <button onClick={() => window.location.reload()} className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-colors">
+                            Refresh Status
+                        </button>
+                        <button className="text-blue-600 font-bold hover:underline text-sm">
+                            Contact Support
+                        </button>
+                    </div>
                 </div>
             </div>
         );
