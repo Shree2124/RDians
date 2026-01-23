@@ -192,6 +192,41 @@ async function checkIfExists(
   return null;
 }
 
+export const GET = withUser(async (req: NextRequest, user) => {
+  try {
+    const supabase = await createSupabaseServerClient();
+
+    const { data: agency, error } = await supabase
+      .from("agencies")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error(error);
+      return NextResponse.json(
+        { error: "Database error", message: error.message },
+        { status: 500 }
+      );
+    }
+
+    if (!agency) {
+      return NextResponse.json({
+        status: "unregistered",
+        agency: null,
+      });
+    }
+
+    return NextResponse.json({
+      status: agency.status, // "draft" | "submitted" | "approved" | "rejected"
+      agency: agency,
+    });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
+});
+
 export const POST = withUser(async (req: NextRequest, user) => {
   try {
     const supabase = await createSupabaseServerClient();

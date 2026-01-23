@@ -8,6 +8,7 @@ import { signOut } from '@/store/slices/authSlice';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useAgencyStatus } from '@/hooks/useAgencyStatus';
 
 interface DashboardSidebarProps {
   mobileMenuOpen?: boolean;
@@ -84,8 +85,24 @@ export default function DashboardSidebar({ mobileMenuOpen, setMobileMenuOpen }: 
     },
   ];
 
+  // Custom Hook for Agency Status
+  const { status, loading: agencyLoading } = useAgencyStatus();
+
   const currentRole = profile?.role || 'citizen';
-  const filteredNavigation = navigation.filter(item => item.roles.includes(currentRole));
+
+  let filteredNavigation = navigation.filter(item => item.roles.includes(currentRole));
+
+  // If agency, but not verified/approved, SHOW ONLY REGISTRATION LINK
+  const isApproved = status?.toLowerCase() === 'approved' || status?.toLowerCase() === 'verified';
+
+  if (currentRole === 'agency' && !isApproved) {
+    filteredNavigation = [{
+      name: 'Registration Status',
+      icon: 'mdi:clipboard-text-clock',
+      href: '/dashboard',
+      roles: ['agency']
+    }];
+  }
 
   const handleLogout = () => {
     dispatch(signOut());
