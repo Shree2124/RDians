@@ -263,7 +263,6 @@ export const POST = withUser(async (req: NextRequest, user) => {
         String(formData.get("phone_verified") ?? "false") === "true",
       status: isDraft ? "draft" : "submitted",
       agency_email: user.email, // Store user email
-      agency_description: String(formData.get("agency_description") ?? ""),
     };
 
     // handle file uploads
