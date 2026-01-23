@@ -2,6 +2,26 @@ import { useState, useEffect, useCallback } from 'react';
 import { Incident, IncidentFilters } from '@/app/types';
 import { incidentService } from '@/app/services/incidentService'; // Updated import
 import { getSupabaseBrowserClient } from '@/lib/supabase/browser'; // For realtime
+import { IncidentCategory, IncidentStatus, IncidentSeverity } from '@/app/types';
+
+// Helper to map raw DB row to Incident type
+const mapDBRowToIncident = (data: any): Incident => ({
+  id: data.id,
+  category: data.category as IncidentCategory,
+  severity: data.severity_level as IncidentSeverity,
+  status: (data.status as IncidentStatus) || 'Pending',
+  location: {
+    lat: data.lat,
+    lon: data.lng,
+  },
+  description: data.description,
+  reporterId: data.user_id,
+  agencies_assigned: data.agencies_assigned,
+  estimatedAffected: data.estimated_people_affected,
+  img_url: data.img_url,
+  timestamp: new Date(data.created_at),
+  lastUpdated: new Date(data.created_at), // or updated_at if available
+});
 
 interface UseIncidentsReturn {
   incidents: Incident[];
@@ -45,21 +65,36 @@ export function useIncidents(): UseIncidentsReturn {
         { event: '*', schema: 'public', table: 'incidents' },
         (payload) => {
           console.log('Realtime change received:', payload);
-          // Simple strategy: Reload all incidents to ensure consistency and correct mapping
-          // Optimization: Handle INSERT/UPDATE/DELETE manually to avoid full fetch
-          loadIncidents();
+
+          if (payload.eventType === 'INSERT') {
+            const newIncident = mapDBRowToIncident(payload.new);
+            setIncidents(prev => {
+              // Avoid duplicates
+              if (prev.some(i => i.id === newIncident.id)) return prev;
+
+              const updated = [newIncident, ...prev];
+              // Sort by date descending just in case
+              return updated.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+            });
+          } else {
+            // For UPDATE/DELETE, simplest is to reload or map manually. 
+            // Reloading is safer for consistency on intricate updates.
+            loadIncidents(true);
+          }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log(`Supabase Realtime Connection Status: ${status}`);
+      });
 
     return () => {
       supabase.removeChannel(channel);
     };
   }, []);
 
-  const loadIncidents = async (): Promise<void> => {
+  const loadIncidents = async (silent: boolean = false): Promise<void> => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       setError(null);
       const data = await incidentService.getAll();
       setIncidents(data);
@@ -67,7 +102,7 @@ export function useIncidents(): UseIncidentsReturn {
       console.error(err);
       setError(err instanceof Error ? err.message : 'Failed to load incidents');
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -77,11 +112,19 @@ export function useIncidents(): UseIncidentsReturn {
   ): Promise<boolean> => {
     try {
       setError(null);
-      await incidentService.create(incidentData, imageFile);
-      // loadIncidents will be triggered by realtime, but we can also fetch to be sure
-      await loadIncidents();
+      // Optimistic update (optional, but good for UX)
+      // Note: We don't have the full DB object yet (e.g. ID), so we might wait for the service response
+      const newIncident = await incidentService.create(incidentData, imageFile);
+
+      if (newIncident) {
+        setIncidents(prev => [newIncident, ...prev]);
+      }
+
+      // Verification fetch
+      await loadIncidents(true);
       return true;
     } catch (err) {
+      console.error('Create incident error:', err);
       setError(err instanceof Error ? err.message : 'Failed to create incident');
       return false;
     }
