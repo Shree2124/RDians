@@ -145,7 +145,7 @@ export default function Map({
 
   // --- 3. HANDLE LAYERS & VIZ CHANGE ---
   useEffect(() => {
-    if (!map || !window.L) return;
+    if (!map || !window.L || !libsLoaded) return;
     const L = window.L;
 
     // A. Update Tile Layer
@@ -181,7 +181,7 @@ export default function Map({
         break;
     }
 
-  }, [map, activeLayer, activeViz, incidents, showIncidents]);
+  }, [map, activeLayer, activeViz, incidents, showIncidents, libsLoaded]);
 
   // --- 4. RENDER USER LOCATION ---
   useEffect(() => {
@@ -212,6 +212,12 @@ export default function Map({
   const renderClusters = (L: any, map: any) => {
     // If user wants "Dark Map", let's reinforce it? 
     // Actually relying on user to select Dark layer manually is better UX than forcing it.
+
+    // Ensure library is loaded
+    if (!L.markerClusterGroup) {
+      console.warn("MarkerClusterGroup not loaded yet");
+      return;
+    }
 
     const markers = L.markerClusterGroup({
       showCoverageOnHover: false,
@@ -316,10 +322,16 @@ export default function Map({
           map.flyTo([latitude, longitude], 16, { animate: true, duration: 1.5 });
         },
         (e) => {
-          console.error("Geolocation error:", e);
-          // Optional: Show a toast/error message to user
+          console.error("Geolocation error:", {
+            code: e.code,
+            message: e.message,
+            PERMISSION_DENIED: e.PERMISSION_DENIED,
+            POSITION_UNAVAILABLE: e.POSITION_UNAVAILABLE,
+            TIMEOUT: e.TIMEOUT
+          });
+          alert(`Could not get your location: ${e.message}`);
         },
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     }
   };
