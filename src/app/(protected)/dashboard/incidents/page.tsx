@@ -3,12 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
-import { Incident } from '@/app/types';
 import IncidentReportForm from '@/components/IncidentReportForm';
 import { useIncidents } from '@/app/hooks/useIncidents';
-import { useAppSelector } from '@/store/hooks'; // Assuming you have typed hooks
 import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
 
 export default function IncidentsPage() {
   const [showReportModal, setShowReportModal] = useState(false);
