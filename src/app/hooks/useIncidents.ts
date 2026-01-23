@@ -144,7 +144,7 @@ export function useIncidents(): UseIncidentsReturn {
       }
     }
 
-    // Location filter (simple radius check)
+    // Location filter
     if (filters.location) {
       const distance = calculateDistance(
         incident.location.lat,
@@ -153,6 +153,13 @@ export function useIncidents(): UseIncidentsReturn {
         filters.location.center.lon
       );
       if (distance > filters.location.radius) {
+        return false;
+      }
+    }
+
+    // "My Incidents" filter
+    if (filters.onlyMyIncidents && filters.reporterId) {
+      if (incident.reporterId !== filters.reporterId) {
         return false;
       }
     }

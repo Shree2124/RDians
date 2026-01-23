@@ -124,6 +124,8 @@ export interface IncidentFilters {
   statuses: IncidentStatus[];
   dateRange?: { start: Date; end: Date; };
   location?: { center: Location; radius: number; };
+  reporterId?: string;
+  onlyMyIncidents?: boolean;
 }
 
 export interface ResourceFilters {

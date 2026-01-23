@@ -42,6 +42,74 @@ export default function IncidentReportForm({ onSubmit, onCancel }: IncidentRepor
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
 
+  // Camera Logic
+  const [inputMode, setInputMode] = useState<'upload' | 'camera'>('upload');
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+
+  const startCamera = async () => {
+    try {
+      setIsCameraActive(true);
+      // Slight delay to ensure DOM element exists if conditional rendering
+      setTimeout(async () => {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        }
+      }, 100);
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+      setErrors(prev => ({ ...prev, camera: 'Could not access camera. Please allow permissions.' }));
+      setIsCameraActive(false);
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      const tracks = stream.getTracks();
+      tracks.forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    setIsCameraActive(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+
+      if (context) {
+        // Set canvas dimensions to match video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        // Draw video frame to canvas
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Convert to blob/file
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File([blob], "camera-capture.jpg", { type: "image/jpeg" });
+            setImageFile(file);
+            stopCamera();
+          }
+        }, 'image/jpeg');
+      }
+    }
+  };
+
+  // Ensure camera is stopped if component unmounts
+  React.useEffect(() => {
+    return () => {
+      stopCamera();
+    };
+  }, []);
+
   const handleInputChange = (field: keyof FormData, value: string | Location | null) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
@@ -241,43 +309,150 @@ export default function IncidentReportForm({ onSubmit, onCancel }: IncidentRepor
           </div>
         </div>
 
-        {/* Image Upload */}
+        {/* Image Input Selection */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Attachment (Image)
           </label>
-          <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:bg-gray-50 transition-colors cursor-pointer relative">
-            <input
-              type="file"
-              accept="image/*"
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              onChange={(e) => {
-                if (e.target.files?.[0]) {
-                  setImageFile(e.target.files[0]);
-                }
+
+          <div className="flex space-x-4 mb-3">
+            <button
+              type="button"
+              onClick={() => {
+                setInputMode('upload');
+                stopCamera();
               }}
-            />
-            <div className="space-y-1 text-center">
-              {imageFile ? (
-                <div className="text-sm text-gray-600">
-                  <Icon icon="mdi:check-circle" className="mx-auto h-8 w-8 text-green-500 mb-2" />
-                  <span className="font-medium text-green-600">{imageFile.name}</span>
-                  <p className="text-xs text-gray-400 mt-1">Click to change</p>
-                </div>
-              ) : (
-                <>
-                  <Icon icon="mdi:image-plus" className="mx-auto h-12 w-12 text-gray-400" />
-                  <div className="flex text-sm text-gray-600 justify-center">
-                    <span className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                      Upload a file
-                    </span>
-                    <p className="pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                </>
-              )}
-            </div>
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${inputMode === 'upload'
+                ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                }`}
+            >
+              <Icon icon="mdi:upload" className="w-4 h-4" />
+              Upload File
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setInputMode('camera');
+                // Don't auto-start camera here, let user click "Start Camera" to be intentional
+              }}
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${inputMode === 'camera'
+                ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                }`}
+            >
+              <Icon icon="mdi:camera" className="w-4 h-4" />
+              Take Photo
+            </button>
           </div>
+
+          {inputMode === 'upload' ? (
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:bg-gray-50 transition-colors cursor-pointer relative">
+              <input
+                type="file"
+                accept="image/*"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    setImageFile(e.target.files[0]);
+                  }
+                }}
+              />
+              <div className="space-y-1 text-center">
+                {imageFile ? (
+                  <div className="text-sm text-gray-600">
+                    <Icon icon="mdi:check-circle" className="mx-auto h-8 w-8 text-green-500 mb-2" />
+                    <span className="font-medium text-green-600">{imageFile.name}</span>
+                    <p className="text-xs text-gray-400 mt-1">Click to change</p>
+                  </div>
+                ) : (
+                  <>
+                    <Icon icon="mdi:image-plus" className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="flex text-sm text-gray-600 justify-center">
+                      <span className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                        Upload a file
+                      </span>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                  </>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="mt-1 border-2 border-gray-300 rounded-lg overflow-hidden bg-gray-100 relative min-h-[300px] flex flex-col items-center justify-center">
+              {!isCameraActive && !imageFile && (
+                <div className="text-center p-6">
+                  <Icon icon="mdi:camera-outline" className="w-16 h-16 text-gray-400 mx-auto mb-3" />
+                  <button
+                    type="button"
+                    onClick={startCamera}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mx-auto"
+                  >
+                    <Icon icon="mdi:camera" className="w-4 h-4" />
+                    Start Camera
+                  </button>
+                </div>
+              )}
+
+              {isCameraActive && (
+                <div className="relative w-full h-full flex flex-col">
+                  {/* Video Stream */}
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    className="w-full h-64 object-cover bg-black"
+                  />
+                  <div className="p-4 bg-white border-t flex justify-center gap-4">
+                    <button
+                      type="button"
+                      onClick={capturePhoto}
+                      className="w-14 h-14 rounded-full border-4 border-blue-500 bg-white flex items-center justify-center hover:bg-gray-50 transition-colors shadow-lg"
+                      title="Capture Photo"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-blue-500"></div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={stopCamera}
+                      className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70"
+                    >
+                      <Icon icon="mdi:close" className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {!isCameraActive && imageFile && inputMode === 'camera' && (
+                <div className="w-full relative">
+                  <img
+                    src={URL.createObjectURL(imageFile)}
+                    alt="Captured"
+                    className="w-full h-64 object-cover"
+                  />
+                  <div className="p-4 bg-white border-t flex justify-between items-center">
+                    <div className="flex items-center gap-2 text-green-600">
+                      <Icon icon="mdi:check-circle" className="w-5 h-5" />
+                      <span className="font-medium text-sm">Photo Captured</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageFile(null);
+                        startCamera();
+                      }}
+                      className="px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200"
+                    >
+                      Retake
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <canvas ref={canvasRef} className="hidden" />
+            </div>
+          )}
         </div>
 
 

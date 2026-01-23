@@ -11,6 +11,7 @@ import { Icon } from '@iconify/react';
 import { useIncidents } from '@/app/hooks/useIncidents';
 import { useResources } from '@/app/hooks/useResources';
 import { useAlerts } from '@/app/hooks/useAlerts';
+import { useDashboardStats } from '@/app/hooks/useDashboardStats';
 import { Incident } from '@/app/types';
 import Map from './Map';
 import IncidentReportForm from './IncidentReportForm';
@@ -86,6 +87,7 @@ export default function CrisisDashboard() {
   const { filteredIncidents, loading } = useIncidents();
   const { filteredResources, getUtilizationRate } = useResources();
   const { alerts, unacknowledgedCount } = useAlerts();
+  const { stats } = useDashboardStats();
   const [showReportForm, setShowReportForm] = useState(false);
 
   // Metrics
@@ -109,10 +111,7 @@ export default function CrisisDashboard() {
         </div>
 
         <div className="flex gap-3">
-          <button className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm flex items-center gap-2">
-            <Icon icon="mdi:filter-variant" className="w-4 h-4" />
-            Filters
-          </button>
+
           <button
             onClick={() => setShowReportForm(true)}
             className="px-4 py-2 border-slate-200 text-white bg-[#0EA5E9] rounded-lg text-sm font-medium hover:bg-slate-600  shadow-lg shadow-slate-200 hover:shadow-xl transition-all flex items-center gap-2"
@@ -127,7 +126,7 @@ export default function CrisisDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Active Incidents"
-          value={activeIncidents.length}
+          value={stats ? stats.totalActiveIncidents : '-'}
           icon="mdi:alert-circle-outline"
           color="text-white"
           textDesign="text-white"
@@ -136,26 +135,26 @@ export default function CrisisDashboard() {
           trend={12}
         />
         <StatCard
-          title="Critical Status"
-          value={criticalCount}
+          title="Critical Incidents"
+          value={stats ? stats.totalCriticalIncidents : '-'}
           icon="mdi:fire"
           color="text-[#0EA5E9]"
           iconBg="bg-[#0EA5E9]/10"
           trend={-5}
         />
         <StatCard
-          title="Resources Deployed"
-          value={activeResources}
-          icon="mdi:ambulance"
+          title="Total Agencies"
+          value={stats ? stats.totalAgencies : '-'}
+          icon="mdi:domain"
           color="text-[#0EA5E9]"
           iconBg="bg-[#0EA5E9]/10"
           customColor="bg-white"
           trend={8}
         />
         <StatCard
-          title="Avg Utilization"
-          value={`${avgUtilization}%`}
-          icon="mdi:chart-donut"
+          title="Total Volunteers"
+          value={stats ? stats.totalVolunteers : '-'}
+          icon="mdi:account-group"
           color="text-[#0EA5E9]"
           iconBg="bg-[#0EA5E9]/10"
           customColor="bg-white"
@@ -190,14 +189,14 @@ export default function CrisisDashboard() {
             </div>
 
             <div className="space-y-3">
-              {alerts.length === 0 ? (
+              {filteredIncidents.length === 0 ? (
                 <div className="p-6 bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-center text-slate-400 text-sm">
-                  All clear. No active alerts.
+                  All clear. No active incidents.
                 </div>
               ) : (
-                alerts.slice(0, 3).map((alert, index) => (
+                filteredIncidents.slice(0, 4).map((incident, index) => (
                   <motion.div
-                    key={alert.id}
+                    key={incident.id}
                     initial={{ x: 20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: index * 0.1 }}
@@ -207,24 +206,24 @@ export default function CrisisDashboard() {
                       {/* User Avatar */}
                       <div className="relative shrink-0">
                         <img
-                          src={`https://i.pravatar.cc/150?u=${alert.id}`}
+                          src={`https://i.pravatar.cc/150?u=${incident.id}`}
                           alt="User"
                           className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover"
                         />
-                        <div className={`absolute -bottom-1 -right-1 p-1 rounded-full border-2 border-white ${alert.severity === 'Critical' ? 'bg-red-50 text-red-500' : 'bg-sky-50 text-sky-500'}`}>
-                          <Icon icon={alert.severity === 'Critical' ? 'mdi:alert-circle' : 'mdi:bell'} className="w-3 h-3" />
+                        <div className={`absolute -bottom-1 -right-1 p-1 rounded-full border-2 border-white ${incident.severity === 'Critical' ? 'bg-red-50 text-red-500' : 'bg-sky-50 text-sky-500'}`}>
+                          <Icon icon={incident.severity === 'Critical' ? 'mdi:alert-circle' : 'mdi:bell'} className="w-3 h-3" />
                         </div>
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start">
-                          <h4 className="text-sm font-bold text-slate-800 truncate pr-2">{alert.title}</h4>
-                          <span className="text-[10px] text-slate-400 whitespace-nowrap">{new Date(alert.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          <h4 className="text-sm font-bold text-slate-800 truncate pr-2">{incident.category}</h4>
+                          <span className="text-[10px] text-slate-400 whitespace-nowrap">{new Date(incident.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
-                        <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{alert.message}</p>
+                        <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">{incident.description}</p>
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="text-[10px] font-medium text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full">
-                            Running Activity
+                          <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${incident.status === 'Resolved' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                            {incident.status}
                           </span>
                         </div>
                       </div>
@@ -234,50 +233,6 @@ export default function CrisisDashboard() {
               )}
             </div>
           </div>
-
-          {/* CREATIVE SECTION 2: TIMELINE ACTIVITY */}
-          <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 flex-1 flex flex-col min-h-[400px]">
-            <h3 className="font-bold text-[#1B2559] text-lg mb-6 flex items-center gap-2 font-text">
-              Timeline
-            </h3>
-
-            <div className="flex-1 overflow-y-auto custom-scrollbar relative pl-2 pr-2">
-              <div className="space-y-0">
-                {filteredIncidents.slice(0, 10).map((incident, i) => (
-                  <div key={incident.id} className="relative flex gap-4 pb-6 last:pb-0 group">
-                    {/* Vertical Connecting Line */}
-                    {i !== filteredIncidents.slice(0, 10).length - 1 && (
-                      <div className="absolute left-[11px] top-3 bottom-0 w-[2px] bg-slate-100 group-last:hidden" />
-                    )}
-
-                    {/* Timeline Node */}
-                    <div className="relative z-10 shrink-0">
-                      <div className={`w-6 h-6 rounded-full border-[3px] border-white shadow-sm flex items-center justify-center ${incident.severity === 'Critical' ? 'bg-red-500' : 'bg-slate-200'}`}>
-                        <div className="w-2 h-2 bg-white rounded-full" />
-                      </div>
-                    </div>
-
-                    <div className="flex-1 pt-0.5">
-                      {/* Content Card */}
-                      <div className="flex justify-between items-start mb-1">
-                        <span className="text-sm font-bold text-slate-700">{incident.category}</span>
-                        <span className="text-[10px] text-slate-400">{new Date(incident.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                      </div>
-
-                      <p className="text-xs text-slate-500 leading-relaxed mb-2">{incident.description}</p>
-
-                      <div className="flex gap-2">
-                        <span className={`text-[10px] px-2 py-0.5 rounded-md font-medium border ${incident.status === 'Resolved' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-slate-50 text-slate-500 border-slate-100'}`}>
-                          {incident.status}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
 
