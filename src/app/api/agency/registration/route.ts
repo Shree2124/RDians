@@ -32,6 +32,7 @@ const requiredFieldsCheck = (body: any, fields: string[]) => {
 const getAgencyRequirements = (type: AgencyType) => {
   const base = [
     "agency_name",
+    "agency_description",
     "agency_address",
     "city",
     "state",
@@ -202,6 +203,7 @@ export const POST = withUser(async (req: NextRequest, user) => {
 
     const agencyPayload: Record<string, any> = {
       user_id: user.id,
+      agency_description: String(formData.get("agency_description") ?? ""),
       agency_name: String(formData.get("agency_name") ?? ""),
       agency_address: String(formData.get("agency_address") ?? ""),
       city: String(formData.get("city") ?? ""),
