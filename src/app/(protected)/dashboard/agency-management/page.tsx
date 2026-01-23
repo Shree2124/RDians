@@ -28,6 +28,7 @@ interface Agency {
     business_reg?: string; // URL
     email?: string;
     contact_email?: string;
+    agency_email?: string;
 }
 
 export default function AgencyManagementPage() {
@@ -75,7 +76,7 @@ export default function AgencyManagementPage() {
                 const agencyData = res.data.data;
                 if (isOpen) {
                     setSelectedAgency(agencyData);
-                    setTargetEmail(agencyData.email || agencyData.contact_email || '');
+                    setTargetEmail(agencyData.agency_email || agencyData.email || agencyData.contact_email || '');
                 } else {
                     // Just update list item if needed
                     setAgencies(prev => prev.map(a => a.id === id ? { ...a, ...agencyData } : a));
@@ -137,7 +138,7 @@ export default function AgencyManagementPage() {
 
     const handleViewDetails = (agency: Agency) => {
         setSelectedAgency(agency);
-        setTargetEmail(agency.email || agency.contact_email || '');
+        setTargetEmail(agency.agency_email || agency.email || agency.contact_email || '');
         fetchAgencyDetails(agency.id);
     };
 
@@ -432,6 +433,7 @@ export default function AgencyManagementPage() {
                                                     </h3>
                                                 </div>
                                                 <div className="p-5 pt-2">
+                                                    <InfoRow label="Email" value={selectedAgency.agency_email || selectedAgency.email} />
                                                     <InfoRow label="Owner Phone" value={selectedAgency.owner_phone} />
                                                     <InfoRow label="Aadhaar (Last 4)" value={selectedAgency.owner_aadhaar_masked ? `XXXX-${selectedAgency.owner_aadhaar_masked}` : '-'} />
                                                     {selectedAgency.pan && <InfoRow label="PAN" value={selectedAgency.pan} />}

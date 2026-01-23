@@ -36,13 +36,6 @@ export function useAgencyStatus() {
 
     useEffect(() => {
         fetchStatus();
-
-        // Poll every 5 seconds to check for approval
-        const interval = setInterval(() => {
-            fetchStatus();
-        }, 5000);
-
-        return () => clearInterval(interval);
     }, []);
 
     return { ...data, loading, error, refetch: fetchStatus };
