@@ -31,15 +31,16 @@ const GovernmentHeader = () => {
                     <div className="flex justify-between items-center">
 
                         {/* Logo Section */}
+                        {/* Logo Section */}
                         <div className="flex items-center space-x-4">
-                            <div className="relative w-32 h-12 md:w-70 md:h-14 flex-shrink-0 ">
+                            <Link href="/" className="relative w-32 h-12 md:w-70 md:h-14 flex-shrink-0 cursor-pointer">
                                 {/* Scaling image to remove visual padding since auto-crop verified full canvas usage */}
                                 <img
                                     src="/icon/logo3.png"
                                     alt="ResQnet Logo"
                                     className="w-full h-full object-contain scale-[1.35] origin-center"
                                 />
-                            </div>
+                            </Link>
                         </div>
 
                         {/* Desktop Navigation & Actions */}
@@ -49,7 +50,7 @@ const GovernmentHeader = () => {
                             <nav className="flex space-x-6 text-sm font-medium text-slate-300">
                                 <Link href="/community" className="hover:text-white transition-colors">Community</Link>
                                 <Link href="/agencies" className="hover:text-white transition-colors">Agencies</Link>
-                                <Link href="/about" className="hover:text-white transition-colors">About</Link>
+
                             </nav>
 
                             <div className="h-5 w-px bg-slate-700"></div>
