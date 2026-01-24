@@ -1,16 +1,16 @@
 import { resend } from "@/lib/resend";
-import VerificationEmail from "../../emails/verificationEmail";
+import {verificationEmailHtml} from "../../emails/verificationEmail";
+import { sendEmail } from "@/lib/email";
 
 export async function sendVerificationEmail(
   email: string,
   verifyCode: string
 ): Promise<any> {
     try {
-        await resend.emails.send({
-            from: 'onboarding@resend.dev',
+        await sendEmail({
             to: email,
-            subject: 'NEXT | verification Code',
-            react: VerificationEmail({ otp: verifyCode }),
+            subject: 'ResQNet | verification Code',
+            html: verificationEmailHtml(verifyCode),
           });
         return {
             success: true,
