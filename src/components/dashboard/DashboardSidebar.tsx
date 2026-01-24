@@ -78,6 +78,12 @@ export default function DashboardSidebar({ mobileMenuOpen, setMobileMenuOpen }: 
       roles: ['admin']
     },
     {
+      name: 'Sub-Admins',
+      icon: 'mdi:shield-account',
+      href: '/dashboard/sub-admins',
+      roles: ['admin']
+    },
+    {
       name: 'Settings',
       icon: 'mdi:cog',
       href: '/dashboard/settings',

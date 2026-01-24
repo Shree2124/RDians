@@ -23,9 +23,10 @@ interface Agency {
     pan?: string;
     gst?: string;
     ngo_darpan_id?: string;
-    registration_certificate?: string; // URL
-    clinic_license?: string; // URL
-    business_reg?: string; // URL
+    ngo_darpan_id?: string;
+    registration_certificate_url?: string;
+    clinic_license_url?: string;
+    business_reg_url?: string;
     email?: string;
     contact_email?: string;
     agency_email?: string;
@@ -35,6 +36,7 @@ export default function AgencyManagementPage() {
     const [agencies, setAgencies] = useState<Agency[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
+    const [selectedDocImage, setSelectedDocImage] = useState<string | null>(null);
 
     // Search & Filter State
     const [searchQuery, setSearchQuery] = useState('');
@@ -444,24 +446,40 @@ export default function AgencyManagementPage() {
                                                 {/* Documents */}
                                                 <div className="p-5 pt-0 grid gap-2">
                                                     <div className="text-sm font-semibold text-slate-500 mb-2">Attached Documents</div>
-                                                    {['registration_certificate', 'clinic_license', 'business_reg'].map(docKey => {
+                                                    {['registration_certificate_url', 'clinic_license_url', 'business_reg_url'].map(docKey => {
                                                         const docUrl = (selectedAgency as any)[docKey];
                                                         if (!docUrl || typeof docUrl !== 'string') return null;
+                                                        const isImage = docUrl.match(/\.(jpeg|jpg|png|webp)$/i);
+
                                                         return (
-                                                            <a
-                                                                key={docKey}
-                                                                href={docUrl}
-                                                                target="_blank"
-                                                                rel="noreferrer"
-                                                                className="flex items-center justify-between px-4 py-3 bg-slate-50 border border-slate-200 hover:border-blue-400 hover:bg-blue-50 rounded-xl transition-all group"
-                                                            >
-                                                                <span className="text-sm font-medium text-slate-700 group-hover:text-blue-700 capitalize">
-                                                                    {docKey.replace(/_/g, ' ')}
+                                                            <div key={docKey} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl group hover:border-blue-300 transition-colors">
+                                                                <span className="text-sm font-medium text-slate-700 capitalize">
+                                                                    {docKey.replace(/_url/g, '').replace(/_/g, ' ')}
                                                                 </span>
-                                                                <Icon icon="mdi:open-in-new" className="text-slate-400 group-hover:text-blue-600" />
-                                                            </a>
+
+                                                                <button
+                                                                    onClick={() => {
+                                                                        if (isImage) {
+                                                                            setSelectedDocImage(docUrl);
+                                                                        } else {
+                                                                            window.open(docUrl, '_blank');
+                                                                        }
+                                                                    }}
+                                                                    className="px-3 py-1.5 bg-white border border-slate-200 text-blue-600 rounded-lg text-xs font-semibold hover:bg-blue-600 hover:text-white transition-all flex items-center gap-1 shadow-sm"
+                                                                    title="View Document"
+                                                                >
+                                                                    <Icon icon={isImage ? "mdi:eye" : "mdi:open-in-new"} className="w-4 h-4" />
+                                                                    {isImage ? "View Preview" : "Open PDF"}
+                                                                </button>
+                                                            </div>
                                                         );
                                                     })}
+                                                    {/* Fallback if no documents found */}
+                                                    {!selectedAgency.registration_certificate_url && !selectedAgency.clinic_license_url && !selectedAgency.business_reg_url && (
+                                                        <div className="p-4 text-center text-slate-400 text-sm bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                                                            No documents uploaded
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -590,6 +608,35 @@ export default function AgencyManagementPage() {
                             </div>
                         </motion.div>
                     </div>
+                )}
+            </AnimatePresence>
+
+            {/* Document Image Modal */}
+            <AnimatePresence>
+                {selectedDocImage && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                        onClick={() => setSelectedDocImage(null)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl bg-black"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button
+                                onClick={() => setSelectedDocImage(null)}
+                                className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-white/20 transition-colors z-10"
+                            >
+                                <Icon icon="mdi:close" className="w-6 h-6" />
+                            </button>
+                            <img src={selectedDocImage} alt="Document" className="w-full h-full object-contain max-h-[85vh]" />
+                        </motion.div>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </div>

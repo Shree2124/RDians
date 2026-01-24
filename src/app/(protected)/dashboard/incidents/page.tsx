@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 export default function IncidentsPage() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   // Get current user from Redux
   const user = useSelector((state: any) => state.auth.user); // Using any temporarily if RootState issues arise, but prefer typed
 
@@ -65,8 +66,8 @@ export default function IncidentsPage() {
             <button
               onClick={() => setShowFilterMenu(!showFilterMenu)}
               className={`flex items-center gap-2 px-4 py-2 border rounded-xl font-medium transition-colors ${filters.onlyMyIncidents
-                  ? 'bg-blue-50 border-blue-200 text-blue-700'
-                  : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                ? 'bg-blue-50 border-blue-200 text-blue-700'
+                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                 }`}
             >
               <Icon icon="mdi:filter-variant" className="w-5 h-5" />
@@ -159,27 +160,45 @@ export default function IncidentsPage() {
                   {/* Details */}
                   <div className="col-span-12 md:col-span-5">
                     <div className="flex items-start gap-4">
-                      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-sm shrink-0 ${incident.category === 'Fire' ? 'bg-red-100 text-red-600' :
-                          incident.category === 'Medical' ? 'bg-blue-100 text-blue-600' :
-                            incident.category === 'Flood' ? 'bg-cyan-100 text-cyan-600' :
-                              'bg-slate-100 text-slate-600'
-                        }`}>
-                        <Icon icon={
-                          incident.category === 'Fire' ? 'mdi:fire' :
-                            incident.category === 'Medical' ? 'mdi:medical-bag' :
-                              incident.category === 'Flood' ? 'mdi:home-flood' :
-                                'mdi:alert-circle'
-                        } className="w-6 h-6" />
+                      {/* Image Preview or Icon */}
+                      {/* Image Preview or Icon */}
+                      <div className="relative shrink-0 flex flex-col items-center gap-2">
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-sm border border-slate-100 ${incident.category === 'Fire' ? 'bg-red-50 text-red-500' :
+                          incident.category === 'Medical' ? 'bg-blue-50 text-blue-500' :
+                            incident.category === 'Flood' ? 'bg-cyan-50 text-cyan-500' :
+                              'bg-slate-50 text-slate-500'
+                          }`}>
+                          <Icon icon={
+                            incident.category === 'Fire' ? 'mdi:fire' :
+                              incident.category === 'Medical' ? 'mdi:medical-bag' :
+                                incident.category === 'Flood' ? 'mdi:home-flood' :
+                                  'mdi:alert-circle'
+                          } className="w-6 h-6" />
+                        </div>
+
+                        {incident.img_url && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedImage(incident.img_url || null);
+                            }}
+                            className="px-2 py-1 bg-white border border-slate-200 shadow-sm text-[10px] font-bold text-blue-600 rounded-md hover:bg-blue-50 flex items-center gap-1 transition-all z-20"
+                          >
+                            <Icon icon="mdi:eye" className="w-3 h-3" />
+                            View Doc
+                          </button>
+                        )}
                       </div>
+
                       <div>
                         <h3 className="font-bold text-slate-800 text-base mb-1">{incident.category}</h3>
-                        <p className="text-sm text-slate-500 line-clamp-1 mb-2 font-medium">{incident.description}</p>
+                        <p className="text-sm text-slate-500 line-clamp-2 mb-2 font-medium leading-relaxed">{incident.description}</p>
                         <div className="flex items-center gap-3 text-xs text-slate-400 font-medium">
-                          <span className="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-md">
+                          <span className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
                             <Icon icon="mdi:calendar-blank" className="w-3.5 h-3.5" />
                             {new Date(incident.timestamp).toLocaleDateString()}
                           </span>
-                          <span className="flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-md">
+                          <span className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
                             <Icon icon="mdi:clock-outline" className="w-3.5 h-3.5" />
                             {new Date(incident.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
@@ -262,6 +281,35 @@ export default function IncidentsPage() {
                   setShowReportModal(false);
                 }}
               />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Image Preview Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setSelectedImage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl bg-black"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full hover:bg-white/20 transition-colors z-10"
+              >
+                <Icon icon="mdi:close" className="w-6 h-6" />
+              </button>
+              <img src={selectedImage} alt="Evidence" className="w-full h-full object-contain max-h-[85vh]" />
             </motion.div>
           </motion.div>
         )}

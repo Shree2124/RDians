@@ -113,22 +113,42 @@ export default function DocumentsStep({ formData, onChange, errors }: DocumentsS
                                             />
                                         ) : (
                                             <div className="relative">
-                                                <input
-                                                    type="file"
-                                                    accept=".pdf,.jpg,.jpeg,.png"
-                                                    onChange={(e) => handleFileChange(req.field, e)}
-                                                    className="block w-full text-sm text-slate-500
+                                                <div className="flex items-center gap-2">
+                                                    <input
+                                                        type="file"
+                                                        accept=".pdf,.jpg,.jpeg,.png"
+                                                        onChange={(e) => handleFileChange(req.field, e)}
+                                                        className="block w-full text-sm text-slate-500
                             file:mr-4 file:py-2 file:px-4
                             file:rounded-full file:border-0
                             file:text-sm file:font-semibold
                             file:bg-blue-50 file:text-blue-700
                             hover:file:bg-blue-100
                           "
-                                                />
+                                                    />
+                                                    {formData[req.field] && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const file = formData[req.field];
+                                                                if (typeof file === 'string') {
+                                                                    window.open(file, '_blank');
+                                                                } else if (file instanceof File) {
+                                                                    const url = URL.createObjectURL(file);
+                                                                    window.open(url, '_blank');
+                                                                }
+                                                            }}
+                                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
+                                                            title="View Document"
+                                                        >
+                                                            <Icon icon="mdi:eye" className="w-5 h-5" />
+                                                        </button>
+                                                    )}
+                                                </div>
                                                 {formData[req.field] && (
                                                     <div className="flex items-center gap-2 mt-2 text-xs text-green-600">
                                                         <Icon icon="mdi:check-circle" />
-                                                        <span>File Selected: {formData[req.field].name}</span>
+                                                        <span>File Selected: {formData[req.field].name || 'Document Uploaded'}</span>
                                                     </div>
                                                 )}
                                             </div>
