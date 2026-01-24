@@ -20,7 +20,7 @@ const GovernmentFooter = () => {
                         <div className="pt-4 space-y-2 text-sm">
                             <div className="flex items-start">
                                 <MapPin size={16} className="mr-2 mt-0.5 text-blue-500 shrink-0" />
-                                <span>Ministry of Urban Development,<br /> Nirman Bhawan, New Delhi - 110011</span>
+                                <span>Rdians,<br /> Mumbai</span>
                             </div>
                             <div className="flex items-center">
                                 <Mail size={16} className="mr-2 text-blue-500 shrink-0" />
@@ -64,19 +64,10 @@ const GovernmentFooter = () => {
 
                 </div>
 
-                {/* Brand Logos / Trust Badges */}
-                <div className="mt-16 pt-8 border-t border-slate-800 flex flex-wrap justify-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                    {/* Placeholders for Govt Logos */}
-                    <div className="h-10 w-24 bg-slate-700 rounded flex items-center justify-center text-[10px] font-bold">DIGITAL INDIA</div>
-                    <div className="h-10 w-24 bg-slate-700 rounded flex items-center justify-center text-[10px] font-bold">G20</div>
-                    <div className="h-10 w-24 bg-slate-700 rounded flex items-center justify-center text-[10px] font-bold">NIC</div>
-                    <div className="h-10 w-24 bg-slate-700 rounded flex items-center justify-center text-[10px] font-bold">MYGOV</div>
-                    <div className="h-10 w-24 bg-slate-700 rounded flex items-center justify-center text-[10px] font-bold">SWACHH BHARAT</div>
-                </div>
 
                 {/* Bottom Bar */}
                 <div className="mt-10 pt-6 border-t border-slate-800 text-center md:text-left flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
-                    <p>© 2025 Project Resqnet. All rights reserved. Content owned by Ministry of Urban Development.</p>
+                    <p>© 2025 Project Resqnet. All rights reserved. Content owned by Rdians.</p>
                     <div className="mt-2 md:mt-0 flex items-center space-x-2">
                         <span>Last Updated: <span className="text-slate-400">Jan 23, 2025</span></span>
                         <span>•</span>

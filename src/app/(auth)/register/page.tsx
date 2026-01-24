@@ -14,6 +14,7 @@ const page = () => {
                     bg-gradient-to-b from-blue-50 to-blue-100 px-6">
       {step === 1 && (
         <RoleSelection
+          excludeRoles={["admin"]}
           onSelect={(selectedRole) => {
             setRole(selectedRole);
             setStep(2);
