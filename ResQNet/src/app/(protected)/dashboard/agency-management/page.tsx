@@ -23,7 +23,6 @@ interface Agency {
     pan?: string;
     gst?: string;
     ngo_darpan_id?: string;
-    ngo_darpan_id?: string;
     registration_certificate_url?: string;
     clinic_license_url?: string;
     business_reg_url?: string;
